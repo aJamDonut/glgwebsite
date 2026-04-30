@@ -53,6 +53,7 @@ class GlgNav extends HTMLElement {
 
     const toggle = this.querySelector(".mobile-menu-toggle");
     const mobileLinks = this.querySelector(".mobile-nav-links");
+    const brandLink = this.querySelector(".brand");
     const closeMenu = () => {
       if (!toggle || !mobileLinks) return;
       this.classList.remove("mobile-nav-open");
@@ -96,6 +97,24 @@ class GlgNav extends HTMLElement {
 
     document.addEventListener("click", triggerLogoAnimation);
     window.addEventListener("scroll", triggerLogoAnimation, { passive: true });
+
+    if (brandLink instanceof HTMLAnchorElement) {
+      brandLink.addEventListener("click", (event) => {
+        const potionGame = window.glgPotionGame;
+        if (!potionGame) return;
+
+        if (potionGame.isStopped && typeof potionGame.resume === "function") {
+          event.preventDefault();
+          potionGame.resume();
+          return;
+        }
+
+        if (typeof potionGame.openCollection !== "function") return;
+
+        event.preventDefault();
+        potionGame.openCollection();
+      });
+    }
   }
 }
 
@@ -489,6 +508,366 @@ function buildCookieManager() {
   });
 }
 
+const POTION_STATE_KEY = "glg_potion_state_v1";
+const POTION_ITEMS = ["Honey", "Herbs", "Devil Tongue", "Darkroot", "Mushrooms", "Water"];
+const POTION_FLASK_NAMES = [
+  "Moonfern Tonic",
+  "Sporeglow Serum",
+  "Riverroot Elixir",
+  "Brambleheart Brew",
+  "Sunpetal Infusion",
+  "Mistcap Draught",
+  "Verdant Flux",
+  "Stoneleaf Essence",
+  "Nightdew Philter"
+];
+
+function createDefaultPotionState() {
+  return {
+    potItems: [],
+    flasks: []
+  };
+}
+
+function loadPotionState() {
+  try {
+    const saved = localStorage.getItem(POTION_STATE_KEY);
+    if (!saved) return createDefaultPotionState();
+    const parsed = JSON.parse(saved);
+
+    return {
+      potItems: Array.isArray(parsed.potItems) ? parsed.potItems.filter((item) => typeof item === "string") : [],
+      flasks: Array.isArray(parsed.flasks) ? parsed.flasks : []
+    };
+  } catch {
+    return createDefaultPotionState();
+  }
+}
+
+function savePotionState(state) {
+  try {
+    localStorage.setItem(POTION_STATE_KEY, JSON.stringify(state));
+  } catch {
+    // Storage may be disabled.
+  }
+}
+
+function randomPick(items) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function getPotionUi() {
+  const existingRoot = document.getElementById("glg-potion-root");
+  if (existingRoot) {
+    return {
+      root: existingRoot,
+      toast: existingRoot.querySelector("[data-potion-toast]"),
+      toastTitle: existingRoot.querySelector("[data-potion-toast-title]"),
+      toastBody: existingRoot.querySelector("[data-potion-toast-body]"),
+      toastPot: existingRoot.querySelector("[data-potion-toast-pot]"),
+      toastCollection: existingRoot.querySelector("[data-potion-collection-btn]"),
+      toastStop: existingRoot.querySelector("[data-potion-stop-btn]"),
+      collectionModal: existingRoot.querySelector("[data-potion-modal]"),
+      collectionList: existingRoot.querySelector("[data-potion-list]")
+    };
+  }
+
+  const root = document.createElement("div");
+  root.id = "glg-potion-root";
+  root.innerHTML = `
+    <section class="potion-toast" data-potion-toast aria-live="polite">
+      <h3 data-potion-toast-title>Lab update</h3>
+      <p data-potion-toast-body></p>
+      <div class="potion-toast-pot">
+        <strong>Pot contents:</strong>
+        <span data-potion-toast-pot>(empty pot)</span>
+        <span><small>Navigate to add more ingredients</small>
+      </div>
+      <div class="potion-toast-actions">
+        <button class="potion-toast-collection" type="button" data-potion-collection-btn>Collection</button>
+        <button class="potion-toast-stop" type="button" data-potion-stop-btn>Stop playing</button>
+      </div>
+    </section>
+
+    <section class="potion-collection-modal" data-potion-modal hidden>
+      <div class="potion-collection-backdrop" data-potion-close></div>
+      <div class="potion-collection-panel" role="dialog" aria-modal="true" aria-labelledby="potion-collection-title">
+        <header class="potion-collection-head">
+          <h2 id="potion-collection-title">Collected Flasks</h2>
+          <button class="potion-close" type="button" data-potion-close aria-label="Close flask collection">X</button>
+        </header>
+        <div class="potion-collection-list" data-potion-list></div>
+      </div>
+    </section>
+  `;
+
+  document.body.append(root);
+
+  const closeTargets = root.querySelectorAll("[data-potion-close]");
+  closeTargets.forEach((el) => {
+    el.addEventListener("click", () => {
+      const modal = root.querySelector("[data-potion-modal]");
+      if (!(modal instanceof HTMLElement)) return;
+      modal.hidden = true;
+      document.body.classList.remove("potion-modal-open");
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    const modal = root.querySelector("[data-potion-modal]");
+    if (!(modal instanceof HTMLElement) || modal.hidden) return;
+    modal.hidden = true;
+    document.body.classList.remove("potion-modal-open");
+  });
+
+  return {
+    root,
+    toast: root.querySelector("[data-potion-toast]"),
+    toastTitle: root.querySelector("[data-potion-toast-title]"),
+    toastBody: root.querySelector("[data-potion-toast-body]"),
+    toastPot: root.querySelector("[data-potion-toast-pot]"),
+    toastCollection: root.querySelector("[data-potion-collection-btn]"),
+    toastStop: root.querySelector("[data-potion-stop-btn]"),
+    collectionModal: root.querySelector("[data-potion-modal]"),
+    collectionList: root.querySelector("[data-potion-list]")
+  };
+}
+
+function formatPotItems(items) {
+  return items.length ? items.join(", ") : "(empty pot)";
+}
+
+function updatePotionUi(ui, state) {
+  if (!(ui.toastPot instanceof HTMLElement)) return;
+  ui.toastPot.textContent = formatPotItems(state.potItems);
+}
+
+function showPotionToast(ui, title, body, duration = 1700) {
+  if (!(ui.toast instanceof HTMLElement) || !(ui.toastTitle instanceof HTMLElement) || !(ui.toastBody instanceof HTMLElement)) return;
+
+  ui.toastTitle.textContent = title;
+  ui.toastBody.textContent = body;
+  ui.toast.classList.add("show");
+
+  if (showPotionToast.timer) {
+    window.clearTimeout(showPotionToast.timer);
+  }
+
+  if (duration > 0) {
+    showPotionToast.timer = window.setTimeout(() => {
+      ui.toast.classList.remove("show");
+    }, duration);
+  }
+}
+
+function potionColorFromName(name) {
+  const hash = Array.from(name).reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+  const hue = hash % 360;
+  const neck = `hsl(${hue} 86% 82%)`;
+  const liquid = `hsl(${(hue + 30) % 360} 84% 56%)`;
+
+  return { neck, liquid };
+}
+
+function flaskSvg(name) {
+  const colors = potionColorFromName(name);
+
+  return `
+    <svg viewBox="0 0 70 70" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <path d="M24 10H46" stroke="${colors.neck}" stroke-width="5" stroke-linecap="round"/>
+      <path d="M28 10V24L16 44C12 52 17 60 28 60H42C53 60 58 52 54 44L42 24V10" stroke="${colors.neck}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 43C26 39 33 47 38 43C43 39 47 39 49 41" stroke="${colors.liquid}" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="27" cy="49" r="3" fill="${colors.liquid}"/>
+      <circle cx="39" cy="50" r="2.4" fill="${colors.liquid}"/>
+    </svg>
+  `;
+}
+
+function pickNextFlaskName(flasks) {
+  const usedNames = new Set(flasks.map((flask) => flask.name));
+
+  for (let i = 0; i < POTION_FLASK_NAMES.length; i += 1) {
+    if (!usedNames.has(POTION_FLASK_NAMES[i])) {
+      return POTION_FLASK_NAMES[i];
+    }
+  }
+
+  const base = randomPick(POTION_FLASK_NAMES);
+  let seq = 2;
+  let candidate = `${base} ${seq}`;
+  while (usedNames.has(candidate)) {
+    seq += 1;
+    candidate = `${base} ${seq}`;
+  }
+
+  return candidate;
+}
+
+function renderFlaskCollection(ui, state) {
+  if (!(ui.collectionList instanceof HTMLElement)) return;
+
+  if (!state.flasks.length) {
+    ui.collectionList.innerHTML = `
+      <div class="potion-empty">
+        <h3>No flasks yet</h3>
+        <p>Scroll to stir your pot and craft your first flask.</p>
+      </div>
+    `;
+    return;
+  }
+
+  ui.collectionList.innerHTML = state.flasks
+    .map((flask) => {
+      const ingredients = Array.isArray(flask.ingredients) && flask.ingredients.length
+        ? flask.ingredients.join(", ")
+        : "Unknown recipe";
+
+      return `
+        <article class="potion-flask-card">
+          <div class="potion-flask-svg">${flaskSvg(flask.name)}</div>
+          <h3>${flask.name}</h3>
+          <p>${ingredients}</p>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function buildPotionGame() {
+  if (!document.body) return;
+
+  const state = loadPotionState();
+  const ui = getPotionUi();
+  let isActive = true;
+  let scrollStopTimer = null;
+  let countdownTimer = null;
+  let countdown = 0;
+
+  const openCollection = () => {
+    if (!isActive) return;
+    if (!(ui.collectionModal instanceof HTMLElement)) return;
+    renderFlaskCollection(ui, state);
+    ui.collectionModal.hidden = false;
+    document.body.classList.add("potion-modal-open");
+  };
+
+  const stopGame = () => {
+    isActive = false;
+
+    if (scrollStopTimer) {
+      window.clearTimeout(scrollStopTimer);
+      scrollStopTimer = null;
+    }
+
+    if (countdownTimer) {
+      window.clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+
+    if (ui.collectionModal instanceof HTMLElement) {
+      ui.collectionModal.hidden = true;
+      document.body.classList.remove("potion-modal-open");
+    }
+
+    if (ui.root instanceof HTMLElement) {
+      ui.root.hidden = true;
+    }
+  };
+
+  const resumeGame = () => {
+    isActive = true;
+    if (ui.root instanceof HTMLElement) {
+      ui.root.hidden = false;
+    }
+
+    updatePotionUi(ui, state);
+    showPotionToast(ui, "Potion game resumed", "Scroll to stir the pot and keep brewing.", 1800);
+  };
+
+  window.glgPotionGame = {
+    openCollection,
+    stop: stopGame,
+    resume: resumeGame,
+    get isStopped() {
+      return !isActive;
+    }
+  };
+
+  if (ui.toastCollection instanceof HTMLButtonElement) {
+    ui.toastCollection.addEventListener("click", openCollection);
+  }
+
+  if (ui.toastStop instanceof HTMLButtonElement) {
+    ui.toastStop.addEventListener("click", stopGame);
+  }
+
+  const addedItem = randomPick(POTION_ITEMS);
+  state.potItems.push(addedItem);
+  savePotionState(state);
+  updatePotionUi(ui, state);
+  showPotionToast(ui, "Ingredient added", `${addedItem} was dropped into the pot.`, 2100);
+
+  const stirMessage = () => {
+    const itemList = formatPotItems(state.potItems);
+    showPotionToast(ui, "Stirring pot", `Inside: ${itemList}`, 0);
+  };
+
+  const createFlask = () => {
+    const flaskName = pickNextFlaskName(state.flasks);
+    const newFlask = {
+      name: flaskName,
+      ingredients: [...state.potItems],
+      createdAt: new Date().toISOString()
+    };
+
+    state.flasks.push(newFlask);
+    state.potItems = [];
+    savePotionState(state);
+    updatePotionUi(ui, state);
+    showPotionToast(ui, "New flask created", flaskName, 2400);
+  };
+
+  const startCountdown = () => {
+    if (!state.potItems.length) return;
+
+    countdown = 2;
+    showPotionToast(ui, "Brewing complete in", `${countdown} seconds`, 0);
+
+    countdownTimer = window.setInterval(() => {
+      countdown -= 1;
+
+      if (countdown <= 0) {
+        window.clearInterval(countdownTimer);
+        countdownTimer = null;
+        createFlask();
+        return;
+      }
+
+      showPotionToast(ui, "Brewing complete in", `${countdown} seconds`, 0);
+    }, 1000);
+  };
+
+  window.addEventListener("scroll", () => {
+    if (!isActive) return;
+
+    stirMessage();
+
+    if (scrollStopTimer) {
+      window.clearTimeout(scrollStopTimer);
+    }
+
+    if (countdownTimer) {
+      window.clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+
+    scrollStopTimer = window.setTimeout(() => {
+      startCountdown();
+    }, 220);
+  }, { passive: true });
+}
+
 const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
@@ -505,6 +884,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   buildCookieManager();
+  buildPotionGame();
 
   document.addEventListener("submit", (event) => {
     const form = event.target;
