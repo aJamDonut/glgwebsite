@@ -4,6 +4,7 @@ class GlgNav extends HTMLElement {
     this.dataset.rendered = "1";
     const active = (this.getAttribute("active") || "").toLowerCase();
     const isActive = (name) => (active === name ? "active" : "");
+    const navItem = (name, label, href, key) => `<a class="nav-link ${isActive(name)}" href="${href}"><span class="nav-key">${key}</span><span>${label}</span></a>`;
 
     this.innerHTML = `
       <div class="orb one"></div>
@@ -23,24 +24,28 @@ class GlgNav extends HTMLElement {
                 <circle class="flask-spark spark-three" cx="40" cy="24" r="1.8" fill="#03160c"/>
               </svg>
             </span>
-            <span>GreenLabGames</span>
+            <span class="brand-text">
+              <span>GreenLabGames</span>
+              <small>Welcome to the lab...</small>
+            </span>
           </a>
+          
           <button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav-links" aria-label="Open menu">
             <span></span>
             <span></span>
             <span></span>
           </button>
           <div class="nav-links" aria-label="Main navigation">
-            <a class="${isActive("home")}" href="index.html">Home</a>
-            <a class="${isActive("projects")}" href="projects.html">Projects</a>
-            <a class="${isActive("studio")}" href="studio.html">Studio</a>
-            <a class="${isActive("contact")}" href="contact.html">Contact</a>
+            ${navItem("home", "Home", "index.html", "01")}
+            ${navItem("projects", "Projects", "projects.html", "02")}
+            ${navItem("studio", "Studio", "studio.html", "03")}
+            ${navItem("contact", "Contact", "contact.html", "04")}
           </div>
           <div class="mobile-nav-links" id="mobile-nav-links" aria-label="Mobile navigation">
-            <a class="${isActive("home")}" href="index.html">Home</a>
-            <a class="${isActive("projects")}" href="projects.html">Projects</a>
-            <a class="${isActive("studio")}" href="studio.html">Studio</a>
-            <a class="${isActive("contact")}" href="contact.html">Contact</a>
+            ${navItem("home", "Home", "index.html", "01")}
+            ${navItem("projects", "Projects", "projects.html", "02")}
+            ${navItem("studio", "Studio", "studio.html", "03")}
+            ${navItem("contact", "Contact", "contact.html", "04")}
           </div>
         </div>
       </nav>
