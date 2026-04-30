@@ -701,6 +701,102 @@ section {
   line-height: 1.6;
 }
 
+.founders-section {
+  position: relative;
+}
+
+.founders-section::before {
+  content: "";
+  position: absolute;
+  inset: 4.5rem -1rem 1rem;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(69, 255, 138, 0.2), transparent 46%),
+    radial-gradient(circle at 84% 78%, rgba(198, 255, 77, 0.15), transparent 50%);
+  border: 1px solid rgba(198, 255, 77, 0.14);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.founders-grid {
+  gap: 1.2rem;
+}
+
+.founder-card {
+  min-height: 360px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.045)),
+    linear-gradient(135deg, rgba(69, 255, 138, 0.08), rgba(101, 255, 216, 0.03));
+  border-color: rgba(198, 255, 77, 0.25);
+}
+
+.founder-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1.25rem;
+  right: 1.25rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(101, 255, 216, 0), rgba(198, 255, 77, 0.82), rgba(101, 255, 216, 0));
+}
+
+.founder-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.founder-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 0.86rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #02200f;
+  background: linear-gradient(135deg, var(--green), var(--lime));
+  box-shadow: 0 10px 26px rgba(69, 255, 138, 0.34);
+}
+
+.founder-card h3 {
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.35rem;
+}
+
+.founder-role {
+  display: inline-block;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(198, 255, 77, 0.36);
+  background: rgba(0, 0, 0, 0.22);
+  color: rgba(236, 255, 245, 0.88);
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.founder-quote {
+  margin-top: 1.35rem;
+  padding-left: 1rem;
+  border-left: 2px solid rgba(69, 255, 138, 0.42);
+}
+
+.founder-quote p {
+  color: rgba(236, 255, 245, 0.86);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.founder-quote p + p {
+  margin-top: 0.85rem;
+}
+
 .project-timeline {
   padding-top: 1rem;
 }
@@ -1268,6 +1364,18 @@ body.cookie-modal-open {
 
   .project-content h2 {
     max-width: none;
+  }
+
+  .founders-section::before {
+    inset: 4.5rem -0.4rem 0.6rem;
+  }
+
+  .founder-card {
+    min-height: auto;
+  }
+
+  .founder-meta {
+    align-items: flex-start;
   }
 
   .cookie-fab {
