@@ -1233,7 +1233,7 @@ section {
 .ltc {
   background:
     linear-gradient(120deg, rgba(0, 0, 0, 0.15), rgba(186, 81, 1, 0.9)),
-    url("ltc.png") right / cover no-repeat;
+    url("sltc.png") right / cover no-repeat;
 }
 
 .wm {
