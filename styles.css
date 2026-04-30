@@ -1741,6 +1741,7 @@ body.cookie-modal-open {
   margin-top: 0.6rem;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.45rem;
 }
 
@@ -1766,14 +1767,15 @@ body.cookie-modal-open {
 }
 
 .potion-toast-stop {
-  min-height: 34px;
-  padding: 0 0.75rem;
+  margin-left: auto;
+  min-height: 30px;
+  padding: 0 0.62rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(255, 255, 255, 0.08);
   color: var(--ink);
   font-family: "Chakra Petch", "Segoe UI", sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1859,6 +1861,25 @@ body.cookie-modal-open {
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
   padding: 0.9rem;
+}
+
+.potion-win-banner {
+  grid-column: 1 / -1;
+  border-radius: 18px;
+  border: 1px solid rgba(198, 255, 77, 0.4);
+  background: linear-gradient(135deg, rgba(198, 255, 77, 0.16), rgba(101, 255, 216, 0.12));
+  padding: 1rem;
+}
+
+.potion-win-banner h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.35rem;
+}
+
+.potion-win-banner p {
+  color: rgba(236, 255, 245, 0.9);
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .potion-flask-svg {

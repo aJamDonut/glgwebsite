@@ -104,6 +104,12 @@ class GlgNav extends HTMLElement {
         const potionGame = window.glgPotionGame;
         if (!potionGame) return;
 
+        if (potionGame.isWon && typeof potionGame.openCollection === "function") {
+          event.preventDefault();
+          potionGame.openCollection();
+          return;
+        }
+
         if (potionGame.isStopped && typeof potionGame.resume === "function") {
           event.preventDefault();
           potionGame.resume();
@@ -526,11 +532,13 @@ const POTION_FLASK_NAMES = [
   "Stoneleaf Essence",
   "Nightdew Philter"
 ];
+const POTION_FLASK_GOAL = 5;
 
 function createDefaultPotionState() {
   return {
     potItems: [],
-    flasks: []
+    flasks: [],
+    winScreenShown: false
   };
 }
 
@@ -539,10 +547,28 @@ function loadPotionState() {
     const saved = localStorage.getItem(POTION_STATE_KEY);
     if (!saved) return createDefaultPotionState();
     const parsed = JSON.parse(saved);
+    const normalizedFlasks = Array.isArray(parsed.flasks)
+      ? parsed.flasks
+        .map((flask) => {
+          if (!flask || typeof flask !== "object") return null;
+          const name = typeof flask.name === "string" && flask.name.trim() ? flask.name : null;
+          if (!name) return null;
+
+          return {
+            name,
+            ingredients: Array.isArray(flask.ingredients)
+              ? flask.ingredients.filter((item) => typeof item === "string")
+              : [],
+            createdAt: typeof flask.createdAt === "string" ? flask.createdAt : ""
+          };
+        })
+        .filter(Boolean)
+      : [];
 
     return {
       potItems: Array.isArray(parsed.potItems) ? parsed.potItems.filter((item) => typeof item === "string") : [],
-      flasks: Array.isArray(parsed.flasks) ? parsed.flasks : []
+      flasks: normalizedFlasks,
+      winScreenShown: parsed.winScreenShown === true
     };
   } catch {
     return createDefaultPotionState();
@@ -594,6 +620,7 @@ function getPotionUi() {
       toastCollection: existingRoot.querySelector("[data-potion-collection-btn]"),
       toastStop: existingRoot.querySelector("[data-potion-stop-btn]"),
       collectionModal: existingRoot.querySelector("[data-potion-modal]"),
+      collectionTitle: existingRoot.querySelector("[data-potion-collection-title]"),
       collectionList: existingRoot.querySelector("[data-potion-list]")
     };
   }
@@ -623,7 +650,7 @@ function getPotionUi() {
       <div class="potion-collection-backdrop" data-potion-close></div>
       <div class="potion-collection-panel" role="dialog" aria-modal="true" aria-labelledby="potion-collection-title">
         <header class="potion-collection-head">
-          <h2 id="potion-collection-title">Collected Flasks</h2>
+          <h2 id="potion-collection-title" data-potion-collection-title>Collected Flasks: 0/${POTION_FLASK_GOAL}</h2>
           <button class="potion-close" type="button" data-potion-close aria-label="Close flask collection">X</button>
         </header>
         <div class="potion-collection-list" data-potion-list></div>
@@ -663,6 +690,7 @@ function getPotionUi() {
     toastCollection: root.querySelector("[data-potion-collection-btn]"),
     toastStop: root.querySelector("[data-potion-stop-btn]"),
     collectionModal: root.querySelector("[data-potion-modal]"),
+    collectionTitle: root.querySelector("[data-potion-collection-title]"),
     collectionList: root.querySelector("[data-potion-list]")
   };
 }
@@ -756,6 +784,10 @@ function pickNextFlaskName(flasks) {
 }
 
 function renderFlaskCollection(ui, state) {
+  if (ui.collectionTitle instanceof HTMLElement) {
+    ui.collectionTitle.textContent = `Collected Flasks: ${state.flasks.length}/${POTION_FLASK_GOAL}`;
+  }
+
   if (!(ui.collectionList instanceof HTMLElement)) return;
 
   if (!state.flasks.length) {
@@ -770,14 +802,15 @@ function renderFlaskCollection(ui, state) {
 
   ui.collectionList.innerHTML = state.flasks
     .map((flask) => {
+      const flaskName = typeof flask.name === "string" && flask.name.trim() ? flask.name : "Unnamed Flask";
       const ingredients = Array.isArray(flask.ingredients) && flask.ingredients.length
         ? flask.ingredients.join(", ")
         : "Unknown recipe";
 
       return `
         <article class="potion-flask-card">
-          <div class="potion-flask-svg">${flaskSvg(flask.name)}</div>
-          <h3>${flask.name}</h3>
+          <div class="potion-flask-svg">${flaskSvg(flaskName)}</div>
+          <h3>${flaskName}</h3>
           <p>${ingredients}</p>
         </article>
       `;
@@ -792,19 +825,78 @@ function buildPotionGame() {
   const ui = getPotionUi();
   updateLogoFlaskBadge(state.flasks.length);
   let isActive = true;
+  let hasWon = state.flasks.length >= POTION_FLASK_GOAL;
   let scrollStopTimer = null;
   let countdownTimer = null;
   let countdown = 0;
 
+  const showWinScreen = () => {
+    if (!(ui.collectionModal instanceof HTMLElement) || !(ui.collectionList instanceof HTMLElement)) return;
+
+    if (ui.root instanceof HTMLElement) {
+      ui.root.hidden = false;
+    }
+
+    if (ui.collectionTitle instanceof HTMLElement) {
+      ui.collectionTitle.textContent = `Game won! Collected Flasks: ${state.flasks.length}/${POTION_FLASK_GOAL}`;
+    }
+
+    ui.collectionList.innerHTML = `
+      <section class="potion-win-banner">
+        <h3>Potion Mastery Unlocked</h3>
+        <p>You brewed all ${POTION_FLASK_GOAL} flasks. Your full collection is on display below.</p>
+      </section>
+    `;
+
+    ui.collectionList.insertAdjacentHTML(
+      "beforeend",
+      state.flasks
+        .map((flask) => {
+          const flaskName = typeof flask.name === "string" && flask.name.trim() ? flask.name : "Unnamed Flask";
+          const ingredients = Array.isArray(flask.ingredients) && flask.ingredients.length
+            ? flask.ingredients.join(", ")
+            : "Unknown recipe";
+
+          return `
+            <article class="potion-flask-card">
+              <div class="potion-flask-svg">${flaskSvg(flaskName)}</div>
+              <h3>${flaskName}</h3>
+              <p>${ingredients}</p>
+            </article>
+          `;
+        })
+        .join("")
+    );
+
+    ui.collectionModal.hidden = false;
+    document.body.classList.add("potion-modal-open");
+  };
+
+  const markWinScreenShown = () => {
+    if (state.winScreenShown) return;
+    state.winScreenShown = true;
+    savePotionState(state);
+  };
+
   const openCollection = () => {
-    if (!isActive) return;
+    if (!isActive && !hasWon) return;
     if (!(ui.collectionModal instanceof HTMLElement)) return;
+
+    if (hasWon) {
+      stopGame({ hideRoot: false, closeModal: false });
+      showWinScreen();
+      return;
+    }
+
     renderFlaskCollection(ui, state);
     ui.collectionModal.hidden = false;
     document.body.classList.add("potion-modal-open");
   };
 
-  const stopGame = () => {
+  const stopGame = (options = {}) => {
+    const hideRoot = options.hideRoot !== false;
+    const closeModal = options.closeModal !== false;
+
     isActive = false;
 
     if (scrollStopTimer) {
@@ -817,17 +909,19 @@ function buildPotionGame() {
       countdownTimer = null;
     }
 
-    if (ui.collectionModal instanceof HTMLElement) {
+    if (closeModal && ui.collectionModal instanceof HTMLElement) {
       ui.collectionModal.hidden = true;
       document.body.classList.remove("potion-modal-open");
     }
 
-    if (ui.root instanceof HTMLElement) {
+    if (hideRoot && ui.root instanceof HTMLElement) {
       ui.root.hidden = true;
     }
   };
 
   const resumeGame = () => {
+    if (hasWon) return;
+
     isActive = true;
     if (ui.root instanceof HTMLElement) {
       ui.root.hidden = false;
@@ -843,6 +937,9 @@ function buildPotionGame() {
     resume: resumeGame,
     get isStopped() {
       return !isActive;
+    },
+    get isWon() {
+      return hasWon;
     }
   };
 
@@ -852,6 +949,25 @@ function buildPotionGame() {
 
   if (ui.toastStop instanceof HTMLButtonElement) {
     ui.toastStop.addEventListener("click", stopGame);
+  }
+
+  if (hasWon) {
+    if (ui.toast instanceof HTMLElement) {
+      ui.toast.hidden = true;
+    }
+    if (ui.toastStop instanceof HTMLButtonElement) {
+      ui.toastStop.hidden = true;
+    }
+
+    if (state.winScreenShown) {
+      stopGame({ hideRoot: true, closeModal: true });
+      return;
+    }
+
+    stopGame({ hideRoot: false, closeModal: false });
+    showWinScreen();
+    markWinScreenShown();
+    return;
   }
 
   const addedItem = randomPick(POTION_ITEMS);
@@ -878,6 +994,23 @@ function buildPotionGame() {
     savePotionState(state);
     updateLogoFlaskBadge(state.flasks.length);
     updatePotionUi(ui, state);
+
+    if (state.flasks.length >= POTION_FLASK_GOAL) {
+      hasWon = true;
+
+      if (ui.toast instanceof HTMLElement) {
+        ui.toast.hidden = true;
+      }
+      if (ui.toastStop instanceof HTMLButtonElement) {
+        ui.toastStop.hidden = true;
+      }
+
+      stopGame({ hideRoot: false, closeModal: false });
+      showWinScreen();
+      markWinScreenShown();
+      return;
+    }
+
     showPotionToast(ui, "New flask created", flaskName, 2400, { flaskName });
   };
 
