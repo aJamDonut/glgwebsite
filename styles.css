@@ -1720,6 +1720,10 @@ body.cookie-modal-open {
   background: rgba(198, 255, 77, 0.08);
 }
 
+.potion-toast-new-flask[hidden] {
+  display: none !important;
+}
+
 .potion-toast-new-flask .potion-flask-svg {
   width: 58px;
   height: 58px;
@@ -1830,6 +1834,32 @@ body.cookie-modal-open {
 .potion-collection-head h2 {
   font-size: clamp(1.4rem, 2vw, 1.8rem);
   letter-spacing: -0.02em;
+}
+
+.potion-collection-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.potion-reset {
+  min-height: 34px;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  font-family: "Chakra Petch", "Segoe UI", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.potion-reset:hover {
+  border-color: rgba(198, 255, 77, 0.5);
+  background: rgba(198, 255, 77, 0.16);
 }
 
 .potion-close {

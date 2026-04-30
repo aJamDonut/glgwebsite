@@ -621,6 +621,7 @@ function getPotionUi() {
       toastStop: existingRoot.querySelector("[data-potion-stop-btn]"),
       collectionModal: existingRoot.querySelector("[data-potion-modal]"),
       collectionTitle: existingRoot.querySelector("[data-potion-collection-title]"),
+      collectionReset: existingRoot.querySelector("[data-potion-reset-btn]"),
       collectionList: existingRoot.querySelector("[data-potion-list]")
     };
   }
@@ -629,12 +630,12 @@ function getPotionUi() {
   root.id = "glg-potion-root";
   root.innerHTML = `
     <section class="potion-toast" data-potion-toast aria-live="polite">
+    (<span><small>Navigate to add more ingredients, Scroll to stir.</small></span>)
       <h3 data-potion-toast-title>Lab update</h3>
       <p data-potion-toast-body></p>
       <div class="potion-toast-pot">
         <strong>Pot contents:</strong>
         <span data-potion-toast-pot>(empty pot)</span>
-        <span><small>Navigate to add more ingredients</small></span>
       </div>
       <div class="potion-toast-new-flask" data-potion-toast-new-flask hidden>
         <div class="potion-flask-svg" data-potion-toast-flask-svg></div>
@@ -651,7 +652,10 @@ function getPotionUi() {
       <div class="potion-collection-panel" role="dialog" aria-modal="true" aria-labelledby="potion-collection-title">
         <header class="potion-collection-head">
           <h2 id="potion-collection-title" data-potion-collection-title>Collected Flasks: 0/${POTION_FLASK_GOAL}</h2>
-          <button class="potion-close" type="button" data-potion-close aria-label="Close flask collection">X</button>
+          <div class="potion-collection-head-actions">
+            <button class="potion-reset" type="button" data-potion-reset-btn>Reset game</button>
+            <button class="potion-close" type="button" data-potion-close aria-label="Close flask collection">X</button>
+          </div>
         </header>
         <div class="potion-collection-list" data-potion-list></div>
       </div>
@@ -691,6 +695,7 @@ function getPotionUi() {
     toastStop: root.querySelector("[data-potion-stop-btn]"),
     collectionModal: root.querySelector("[data-potion-modal]"),
     collectionTitle: root.querySelector("[data-potion-collection-title]"),
+    collectionReset: root.querySelector("[data-potion-reset-btn]"),
     collectionList: root.querySelector("[data-potion-list]")
   };
 }
@@ -715,8 +720,8 @@ function showPotionToast(ui, title, body, duration = 1700, options = {}) {
     ui.toastNewFlaskSvg instanceof HTMLElement &&
     ui.toastNewFlaskName instanceof HTMLElement
   ) {
-    const flaskName = typeof options.flaskName === "string" ? options.flaskName : "";
-    if (flaskName) {
+    const flaskName = typeof options.flaskName === "string" ? options.flaskName.trim() : "";
+    if (flaskName.length > 0) {
       ui.toastNewFlask.hidden = false;
       ui.toastNewFlaskSvg.innerHTML = flaskSvg(flaskName);
       ui.toastNewFlaskName.textContent = flaskName;
@@ -830,6 +835,14 @@ function buildPotionGame() {
   let countdownTimer = null;
   let countdown = 0;
 
+  const seedNewIngredient = () => {
+    const addedItem = randomPick(POTION_ITEMS);
+    state.potItems.push(addedItem);
+    savePotionState(state);
+    updatePotionUi(ui, state);
+    showPotionToast(ui, "Ingredient added", `${addedItem} was dropped into the pot.`, 2100);
+  };
+
   const showWinScreen = () => {
     if (!(ui.collectionModal instanceof HTMLElement) || !(ui.collectionList instanceof HTMLElement)) return;
 
@@ -931,10 +944,61 @@ function buildPotionGame() {
     showPotionToast(ui, "Potion game resumed", "Scroll to stir the pot and keep brewing.", 1800);
   };
 
+  const resetGame = () => {
+    if (scrollStopTimer) {
+      window.clearTimeout(scrollStopTimer);
+      scrollStopTimer = null;
+    }
+
+    if (countdownTimer) {
+      window.clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+
+    state.potItems = [];
+    state.flasks = [];
+    state.winScreenShown = false;
+    hasWon = false;
+    isActive = true;
+
+    updateLogoFlaskBadge(0);
+
+    if (ui.collectionModal instanceof HTMLElement) {
+      ui.collectionModal.hidden = true;
+      document.body.classList.remove("potion-modal-open");
+    }
+
+    if (ui.root instanceof HTMLElement) {
+      ui.root.hidden = false;
+    }
+
+    if (ui.toast instanceof HTMLElement) {
+      ui.toast.hidden = false;
+    }
+
+    if (ui.toastStop instanceof HTMLButtonElement) {
+      ui.toastStop.hidden = false;
+    }
+
+    if (
+      ui.toastNewFlask instanceof HTMLElement &&
+      ui.toastNewFlaskSvg instanceof HTMLElement &&
+      ui.toastNewFlaskName instanceof HTMLElement
+    ) {
+      ui.toastNewFlask.hidden = true;
+      ui.toastNewFlaskSvg.innerHTML = "";
+      ui.toastNewFlaskName.textContent = "";
+    }
+
+    savePotionState(state);
+    seedNewIngredient();
+  };
+
   window.glgPotionGame = {
     openCollection,
     stop: stopGame,
     resume: resumeGame,
+    reset: resetGame,
     get isStopped() {
       return !isActive;
     },
@@ -949,6 +1013,10 @@ function buildPotionGame() {
 
   if (ui.toastStop instanceof HTMLButtonElement) {
     ui.toastStop.addEventListener("click", stopGame);
+  }
+
+  if (ui.collectionReset instanceof HTMLButtonElement) {
+    ui.collectionReset.addEventListener("click", resetGame);
   }
 
   if (hasWon) {
@@ -970,11 +1038,7 @@ function buildPotionGame() {
     return;
   }
 
-  const addedItem = randomPick(POTION_ITEMS);
-  state.potItems.push(addedItem);
-  savePotionState(state);
-  updatePotionUi(ui, state);
-  showPotionToast(ui, "Ingredient added", `${addedItem} was dropped into the pot.`, 2100);
+  seedNewIngredient();
 
   const stirMessage = () => {
     const itemList = formatPotItems(state.potItems);
