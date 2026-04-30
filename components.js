@@ -23,6 +23,7 @@ class GlgNav extends HTMLElement {
                 <circle class="flask-spark spark-two" cx="33" cy="19" r="1.6" fill="#03160c"/>
                 <circle class="flask-spark spark-three" cx="40" cy="24" r="1.8" fill="#03160c"/>
               </svg>
+              <span class="logo-badge" data-flask-badge hidden>0</span>
             </span>
             <span class="brand-text">
               <span>GreenLabGames</span>
@@ -484,7 +485,11 @@ function buildCookieManager() {
 
   resetBtn.addEventListener("click", () => {
     clearAllDocumentCookies();
-    localStorage.removeItem(COOKIE_CONSENT_KEY);
+    try {
+      localStorage.clear();
+    } catch {
+      // Storage may be disabled.
+    }
     setConsentState(null);
     renderDetectedRows();
   });
@@ -556,6 +561,24 @@ function randomPick(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+function updateLogoFlaskBadge(count) {
+  const badges = document.querySelectorAll("[data-flask-badge]");
+  const safeCount = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
+
+  badges.forEach((badge) => {
+    if (!(badge instanceof HTMLElement)) return;
+
+    if (safeCount <= 0) {
+      badge.hidden = true;
+      badge.textContent = "0";
+      return;
+    }
+
+    badge.hidden = false;
+    badge.textContent = String(Math.min(99, safeCount));
+  });
+}
+
 function getPotionUi() {
   const existingRoot = document.getElementById("glg-potion-root");
   if (existingRoot) {
@@ -565,6 +588,9 @@ function getPotionUi() {
       toastTitle: existingRoot.querySelector("[data-potion-toast-title]"),
       toastBody: existingRoot.querySelector("[data-potion-toast-body]"),
       toastPot: existingRoot.querySelector("[data-potion-toast-pot]"),
+      toastNewFlask: existingRoot.querySelector("[data-potion-toast-new-flask]"),
+      toastNewFlaskSvg: existingRoot.querySelector("[data-potion-toast-flask-svg]"),
+      toastNewFlaskName: existingRoot.querySelector("[data-potion-toast-flask-name]"),
       toastCollection: existingRoot.querySelector("[data-potion-collection-btn]"),
       toastStop: existingRoot.querySelector("[data-potion-stop-btn]"),
       collectionModal: existingRoot.querySelector("[data-potion-modal]"),
@@ -581,7 +607,11 @@ function getPotionUi() {
       <div class="potion-toast-pot">
         <strong>Pot contents:</strong>
         <span data-potion-toast-pot>(empty pot)</span>
-        <span><small>Navigate to add more ingredients</small>
+        <span><small>Navigate to add more ingredients</small></span>
+      </div>
+      <div class="potion-toast-new-flask" data-potion-toast-new-flask hidden>
+        <div class="potion-flask-svg" data-potion-toast-flask-svg></div>
+        <span data-potion-toast-flask-name></span>
       </div>
       <div class="potion-toast-actions">
         <button class="potion-toast-collection" type="button" data-potion-collection-btn>Collection</button>
@@ -627,6 +657,9 @@ function getPotionUi() {
     toastTitle: root.querySelector("[data-potion-toast-title]"),
     toastBody: root.querySelector("[data-potion-toast-body]"),
     toastPot: root.querySelector("[data-potion-toast-pot]"),
+    toastNewFlask: root.querySelector("[data-potion-toast-new-flask]"),
+    toastNewFlaskSvg: root.querySelector("[data-potion-toast-flask-svg]"),
+    toastNewFlaskName: root.querySelector("[data-potion-toast-flask-name]"),
     toastCollection: root.querySelector("[data-potion-collection-btn]"),
     toastStop: root.querySelector("[data-potion-stop-btn]"),
     collectionModal: root.querySelector("[data-potion-modal]"),
@@ -643,11 +676,29 @@ function updatePotionUi(ui, state) {
   ui.toastPot.textContent = formatPotItems(state.potItems);
 }
 
-function showPotionToast(ui, title, body, duration = 1700) {
+function showPotionToast(ui, title, body, duration = 1700, options = {}) {
   if (!(ui.toast instanceof HTMLElement) || !(ui.toastTitle instanceof HTMLElement) || !(ui.toastBody instanceof HTMLElement)) return;
 
   ui.toastTitle.textContent = title;
   ui.toastBody.textContent = body;
+
+  if (
+    ui.toastNewFlask instanceof HTMLElement &&
+    ui.toastNewFlaskSvg instanceof HTMLElement &&
+    ui.toastNewFlaskName instanceof HTMLElement
+  ) {
+    const flaskName = typeof options.flaskName === "string" ? options.flaskName : "";
+    if (flaskName) {
+      ui.toastNewFlask.hidden = false;
+      ui.toastNewFlaskSvg.innerHTML = flaskSvg(flaskName);
+      ui.toastNewFlaskName.textContent = flaskName;
+    } else {
+      ui.toastNewFlask.hidden = true;
+      ui.toastNewFlaskSvg.innerHTML = "";
+      ui.toastNewFlaskName.textContent = "";
+    }
+  }
+
   ui.toast.classList.add("show");
 
   if (showPotionToast.timer) {
@@ -739,6 +790,7 @@ function buildPotionGame() {
 
   const state = loadPotionState();
   const ui = getPotionUi();
+  updateLogoFlaskBadge(state.flasks.length);
   let isActive = true;
   let scrollStopTimer = null;
   let countdownTimer = null;
@@ -824,8 +876,9 @@ function buildPotionGame() {
     state.flasks.push(newFlask);
     state.potItems = [];
     savePotionState(state);
+    updateLogoFlaskBadge(state.flasks.length);
     updatePotionUi(ui, state);
-    showPotionToast(ui, "New flask created", flaskName, 2400);
+    showPotionToast(ui, "New flask created", flaskName, 2400, { flaskName });
   };
 
   const startCountdown = () => {
@@ -850,6 +903,7 @@ function buildPotionGame() {
 
   window.addEventListener("scroll", () => {
     if (!isActive) return;
+    if (!state.potItems.length) return;
 
     stirMessage();
 

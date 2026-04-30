@@ -188,6 +188,26 @@ a {
   z-index: -1;
 }
 
+.logo-badge {
+  position: absolute;
+  top: -8px;
+  right: -9px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(3, 16, 10, 0.85);
+  background: #e63946;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  transform: rotate(4deg);
+}
+
 .logo svg {
   width: 36px;
   height: 36px;
@@ -1636,7 +1656,7 @@ body.cookie-modal-open {
   position: fixed;
   right: 1rem;
   top: 5.7rem;
-  z-index: 140;
+  z-index: 2147483646;
   width: min(380px, calc(100% - 2rem));
   padding: 0.95rem 1rem;
   border-radius: 18px;
@@ -1687,6 +1707,34 @@ body.cookie-modal-open {
   color: var(--muted);
   font-size: 0.88rem;
   line-height: 1.35;
+}
+
+.potion-toast-new-flask {
+  margin-top: 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(198, 255, 77, 0.36);
+  background: rgba(198, 255, 77, 0.08);
+}
+
+.potion-toast-new-flask .potion-flask-svg {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 0;
+}
+
+.potion-toast-new-flask .potion-flask-svg svg {
+  width: 42px;
+  height: 42px;
+}
+
+.potion-toast-new-flask span {
+  font-size: 0.84rem;
+  color: rgba(236, 255, 245, 0.94);
+  letter-spacing: 0.02em;
 }
 
 .potion-toast-actions {
@@ -1740,7 +1788,7 @@ body.cookie-modal-open {
 .potion-collection-modal {
   position: fixed;
   inset: 0;
-  z-index: 145;
+  z-index: 2147483647;
   display: grid;
   place-items: center;
   padding: 1rem;
