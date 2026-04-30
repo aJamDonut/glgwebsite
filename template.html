@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GreenLabGames | Experimental Worlds. Playable Futures.</title>
+  <meta name="description" content="GreenLabGames is an indie game studio building strange, beautiful, systems-driven games inspired by nature, science, and play." />
+  <style>
+    :root {
+      --bg: #05130d;
+      --bg-soft: #092116;
+      --ink: #ecfff5;
+      --muted: #9bcdb1;
+      --green: #45ff8a;
+      --green-deep: #0ead59;
+      --lime: #c6ff4d;
+      --cyan: #65ffd8;
+      --glass: rgba(255, 255, 255, 0.08);
+      --glass-strong: rgba(255, 255, 255, 0.14);
+      --line: rgba(198, 255, 77, 0.2);
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 15%, rgba(69, 255, 138, 0.22), transparent 28rem),
+        radial-gradient(circle at 85% 10%, rgba(101, 255, 216, 0.16), transparent 24rem),
+        radial-gradient(circle at 60% 85%, rgba(198, 255, 77, 0.12), transparent 28rem),
+        linear-gradient(135deg, #030906 0%, #071a11 45%, #061008 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(circle at center, black, transparent 78%);
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.08) 50%);
+      background-size: 100% 4px;
+      opacity: 0.28;
+      z-index: 99;
+    }
+
+    .orb {
+      position: fixed;
+      width: 24rem;
+      height: 24rem;
+      border-radius: 999px;
+      filter: blur(70px);
+      opacity: 0.28;
+      pointer-events: none;
+      animation: float 14s ease-in-out infinite alternate;
+      z-index: -1;
+    }
+
+    .orb.one {
+      top: 18%;
+      left: -8rem;
+      background: var(--green);
+    }
+
+    .orb.two {
+      right: -9rem;
+      bottom: 10%;
+      background: var(--cyan);
+      animation-delay: -4s;
+    }
+
+    @keyframes float {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to { transform: translate3d(3rem, -2rem, 0) scale(1.12); }
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(5, 19, 13, 0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-inner {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      font-size: 1.25rem;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--green), var(--lime));
+      color: #032012;
+      box-shadow: 0 0 30px rgba(69, 255, 138, 0.45);
+      transform: rotate(-6deg);
+    }
+
+    .logo svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.94rem;
+    }
+
+    .nav-links a {
+      transition: color 0.2s ease, text-shadow 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+      text-shadow: 0 0 18px rgba(69, 255, 138, 0.8);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      min-height: 48px;
+      padding: 0 1.15rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--glass);
+      color: var(--ink);
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(198, 255, 77, 0.55);
+      background: var(--glass-strong);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--green), var(--lime));
+      color: #03160c;
+      border: 0;
+      box-shadow: 0 0 34px rgba(69, 255, 138, 0.28);
+    }
+
+    .hero {
+      min-height: calc(100vh - 78px);
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 3rem;
+      align-items: center;
+      padding: 5rem 0 4rem;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.85rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.055);
+      font-weight: 800;
+      font-size: 0.86rem;
+      margin-bottom: 1.3rem;
+    }
+
+    .pulse {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 rgba(69, 255, 138, 0.8);
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(69,255,138,0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(69,255,138,0); }
+      100% { box-shadow: 0 0 0 0 rgba(69,255,138,0); }
+    }
+
+    h1 {
+      font-size: clamp(3.5rem, 8vw, 7.7rem);
+      line-height: 0.88;
+      letter-spacing: -0.085em;
+      margin-bottom: 1.35rem;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--ink), var(--green), var(--lime));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      max-width: 640px;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin-top: 2rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-top: 2.2rem;
+      max-width: 640px;
+    }
+
+    .stat {
+      padding: 1rem;
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.055);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.35rem;
+      color: var(--green);
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .lab-card {
+      position: relative;
+      min-height: 580px;
+      border-radius: 36px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.14);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.045)),
+        radial-gradient(circle at 50% 20%, rgba(69,255,138,0.28), transparent 18rem);
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .lab-card::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 35px;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(198,255,77,0.16), transparent 10rem),
+        linear-gradient(180deg, rgba(4,20,11,0.18), rgba(2,8,5,0.8));
+      z-index: -1;
+    }
+
+    .creature {
+      position: absolute;
+      left: 50%;
+      top: 45%;
+      width: min(72%, 380px);
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+      border-radius: 42% 58% 48% 52% / 58% 38% 62% 42%;
+      background:
+        radial-gradient(circle at 34% 32%, #fff 0 3%, transparent 3.5%),
+        radial-gradient(circle at 62% 30%, #fff 0 3%, transparent 3.5%),
+        radial-gradient(circle at 50% 58%, rgba(2,18,9,0.48) 0 12%, transparent 12.6%),
+        linear-gradient(145deg, var(--green), var(--lime));
+      box-shadow:
+        inset -30px -40px 80px rgba(0,0,0,0.18),
+        0 0 80px rgba(69,255,138,0.34);
+      animation: bob 4s ease-in-out infinite;
+    }
+
+    .creature::before,
+    .creature::after {
+      content: "";
+      position: absolute;
+      width: 34%;
+      height: 34%;
+      border-radius: 999px;
+      background: rgba(198,255,77,0.55);
+      filter: blur(2px);
+      z-index: -1;
+    }
+
+    .creature::before {
+      left: -12%;
+      top: 35%;
+    }
+
+    .creature::after {
+      right: -12%;
+      top: 38%;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translate(-50%, -50%) rotate(-2deg); }
+      50% { transform: translate(-50%, -54%) rotate(2deg); }
+    }
+
+    .glass-panel {
+      position: absolute;
+      left: 1.2rem;
+      right: 1.2rem;
+      bottom: 1.2rem;
+      padding: 1.25rem;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(1, 14, 7, 0.58);
+      backdrop-filter: blur(18px);
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin-bottom: 0.7rem;
+    }
+
+    .bar {
+      height: 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 73%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), var(--lime));
+      box-shadow: 0 0 20px rgba(69,255,138,0.5);
+    }
+
+    .floating-chip {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.34);
+      border: 1px solid rgba(255,255,255,0.13);
+      color: var(--ink);
+      font-size: 0.8rem;
+      font-weight: 900;
+      backdrop-filter: blur(14px);
+      animation: drift 5s ease-in-out infinite alternate;
+    }
+
+    .chip-a { top: 12%; left: 9%; }
+    .chip-b { top: 25%; right: 7%; animation-delay: -1.5s; }
+    .chip-c { top: 65%; left: 7%; animation-delay: -3s; }
+
+    @keyframes drift {
+      to { transform: translateY(-14px); }
+    }
+
+    section {
+      padding: 5.5rem 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .section-head h2 {
+      font-size: clamp(2.1rem, 4vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: -0.065em;
+    }
+
+    .section-head p {
+      max-width: 450px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .games {
+      display: grid;
+      grid-template-columns: 1.25fr 0.85fr;
+      gap: 1rem;
+    }
+
+    .game-card {
+      position: relative;
+      min-height: 360px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 30px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.13);
+      background: rgba(255,255,255,0.055);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.22);
+      transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+
+    .game-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(69,255,138,0.48);
+    }
+
+    .game-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(69,255,138,0.34), transparent 16rem),
+        radial-gradient(circle at 80% 50%, rgba(101,255,216,0.18), transparent 12rem);
+      opacity: 0.9;
+      z-index: -1;
+    }
+
+    .game-card.tall {
+      min-height: 736px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .tag {
+      padding: 0.42rem 0.65rem;
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 999px;
+      background: rgba(0,0,0,0.2);
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .game-title h3 {
+      font-size: clamp(2rem, 4vw, 4.4rem);
+      line-height: 0.9;
+      letter-spacing: -0.07em;
+      margin-bottom: 0.6rem;
+    }
+
+    .game-title p {
+      color: var(--muted);
+      max-width: 500px;
+      line-height: 1.6;
+    }
+
+    .mini-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .feature {
+      padding: 1.35rem;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.11);
+      background: rgba(255,255,255,0.055);
+    }
+
+    .feature .icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: rgba(69,255,138,0.12);
+      border: 1px solid rgba(69,255,138,0.24);
+      margin-bottom: 1.1rem;
+      font-size: 1.45rem;
+    }
+
+    .feature h3 {
+      margin-bottom: 0.55rem;
+      font-size: 1.2rem;
+      letter-spacing: -0.03em;
+    }
+
+    .feature p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.96rem;
+    }
+
+    .newsletter {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: clamp(1.4rem, 4vw, 3rem);
+      border-radius: 36px;
+      background:
+        linear-gradient(135deg, rgba(69,255,138,0.15), rgba(101,255,216,0.08)),
+        rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.13);
+      box-shadow: var(--shadow);
+    }
+
+    .newsletter h2 {
+      font-size: clamp(2rem, 4vw, 4.2rem);
+      line-height: 0.96;
+      letter-spacing: -0.07em;
+      margin-bottom: 0.8rem;
+    }
+
+    .newsletter p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 650px;
+    }
+
+    .signup {
+      display: flex;
+      gap: 0.55rem;
+      padding: 0.5rem;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.26);
+      border: 1px solid rgba(255,255,255,0.13);
+      min-width: min(100%, 420px);
+    }
+
+    .signup input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: 0;
+      outline: 0;
+      padding: 0 0.8rem;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .signup input::placeholder {
+      color: rgba(236,255,245,0.48);
+    }
+
+    footer {
+      padding: 2.6rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-weight: 700;
+    }
+
+    .socials {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .socials a:hover {
+      color: var(--green);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .games,
+      .newsletter {
+        grid-template-columns: 1fr;
+      }
+
+      .lab-card,
+      .game-card.tall {
+        min-height: 520px;
+      }
+
+      .section-head,
+      .footer-inner {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .about-grid,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .shell {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .hero {
+        padding-top: 3rem;
+      }
+
+      .hero-actions,
+      .signup {
+        align-items: stretch;
+        flex-direction: column;
+        border-radius: 26px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .signup input {
+        min-height: 48px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb one"></div>
+  <div class="orb two"></div>
+
+  <nav class="nav">
+    <div class="shell nav-inner">
+      <a class="brand" href="#top" aria-label="GreenLabGames home">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 40C14 25 25 14 40 14C44 14 48 15 52 17C51 35 41 50 24 53C18 52 14 47 14 40Z" fill="currentColor"/>
+            <path d="M24 43C30 31 39 25 52 17" stroke="#03160c" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>GreenLabGames</span>
+      </a>
+      <div class="nav-links" aria-label="Main navigation">
+        <a href="#games">Games</a>
+        <a href="#studio">Studio</a>
+        <a href="#newsletter">Updates</a>
+        <a class="btn" href="mailto:hello@greenlabgames.com">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <header class="shell hero">
+      <div>
+        <div class="eyebrow"><span class="pulse"></span> Indie studio cultivating strange playable ecosystems</div>
+        <h1>Games grown in the <span class="gradient-text">lab.</span></h1>
+        <p>
+          GreenLabGames builds bold, systems-driven adventures where tiny decisions bloom into wild consequences.
+          We mix creature design, tactical chaos, environmental storytelling, and arcade energy.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#games">Explore our worlds</a>
+          <a class="btn" href="#studio">Enter the lab</a>
+        </div>
+        <div class="stats" aria-label="Studio highlights">
+          <div class="stat"><strong>03</strong><span>prototypes incubating</span></div>
+          <div class="stat"><strong>12k</strong><span>playtest minutes logged</span></div>
+          <div class="stat"><strong>∞</strong><span>mutations expected</span></div>
+        </div>
+      </div>
+
+      <div class="lab-card" aria-label="Animated GreenLabGames creature display">
+        <div class="floating-chip chip-a">🧬 Bio-Arcade</div>
+        <div class="floating-chip chip-b">⚡ Fast Systems</div>
+        <div class="floating-chip chip-c">🌱 Wild Growth</div>
+        <div class="creature" aria-hidden="true"></div>
+        <div class="glass-panel">
+          <div class="progress-label"><span>Project Sproutcore</span><span>73%</span></div>
+          <div class="bar"><span></span></div>
+        </div>
+      </div>
+    </header>
+
+    <section id="games" class="shell reveal">
+      <div class="section-head">
+        <h2>Experiments<br />worth playing.</h2>
+        <p>Three internal concepts from the GreenLabGames incubation vault. Replace these cards with your real games when ready.</p>
+      </div>
+
+      <div class="games">
+        <article class="game-card tall">
+          <div class="tag-row">
+            <span class="tag">Roguelite</span>
+            <span class="tag">Creature Combos</span>
+            <span class="tag">PC / Console</span>
+          </div>
+          <div class="game-title">
+            <h3>Sproutcore</h3>
+            <p>Grow a party of unstable plant-creatures, splice abilities mid-run, and survive a greenhouse that rewrites its rules every night.</p>
+          </div>
+        </article>
+
+        <div class="mini-grid">
+          <article class="game-card">
+            <div class="tag-row">
+              <span class="tag">Co-op</span>
+              <span class="tag">Puzzle</span>
+            </div>
+            <div class="game-title">
+              <h3>Moss Signal</h3>
+              <p>Send living messages through an alien forest where sound, light, and fungus form the interface.</p>
+            </div>
+          </article>
+
+          <article class="game-card">
+            <div class="tag-row">
+              <span class="tag">Arcade</span>
+              <span class="tag">High Score</span>
+            </div>
+            <div class="game-title">
+              <h3>Slime Rush</h3>
+              <p>A twitchy mutation racer about splitting, sticking, bouncing, and becoming too weird to lose.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="studio" class="shell reveal">
+      <div class="section-head">
+        <h2>The studio<br />philosophy.</h2>
+        <p>We prototype like scientists and polish like arcade cabinet obsessives.</p>
+      </div>
+
+      <div class="about-grid">
+        <article class="feature">
+          <div class="icon">🧪</div>
+          <h3>Experimental first</h3>
+          <p>Every project starts with one strange mechanic that has to feel alive before anything else survives.</p>
+        </article>
+        <article class="feature">
+          <div class="icon">🌿</div>
+          <h3>Systems that grow</h3>
+          <p>Our games prefer emergent interactions, surprising player stories, and mechanics with roots under the surface.</p>
+        </article>
+        <article class="feature">
+          <div class="icon">🎮</div>
+          <h3>Instantly playable</h3>
+          <p>No sterile simulations. The lab only keeps ideas that are readable, tactile, replayable, and a little dangerous.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="newsletter" class="shell reveal">
+      <div class="newsletter">
+        <div>
+          <h2>Receive field notes.</h2>
+          <p>Get prototype drops, playtest invites, behind-the-scenes art, and the occasional suspicious lab incident.</p>
+        </div>
+        <form class="signup" onsubmit="event.preventDefault(); showThanks();">
+          <input id="email" type="email" placeholder="player@domain.com" aria-label="Email address" required />
+          <button class="btn primary" type="submit">Join</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <span>© <span id="year"></span> GreenLabGames. All rights reserved.</span>
+      <div class="socials" aria-label="Social links">
+        <a href="#">Discord</a>
+        <a href="#">Steam</a>
+        <a href="#">YouTube</a>
+        <a href="#">Press Kit</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function showThanks() {
+      const email = document.getElementById('email');
+      const button = document.querySelector('.signup button');
+      button.textContent = 'Added to the lab';
+      email.value = '';
+      setTimeout(() => button.textContent = 'Join', 2200);
+    }
+  </script>
+</body>
+</html>
