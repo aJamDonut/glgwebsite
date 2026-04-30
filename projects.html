@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GreenLabGames | Projects</title>
+  <meta name="description" content="Current and upcoming game concepts from GreenLabGames." />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="components.js" defer></script>
+</head>
+<body>
+  <glg-nav active="projects"></glg-nav>
+
+  <main>
+    <header class="shell hero page-hero reveal">
+      <div>
+        <div class="eyebrow"><span class="pulse"></span> Project slate</div>
+        <h1 class="page-title">Current <span class="gradient-text">experiments.</span></h1>
+        <p class="lead">A snapshot of active concepts in the GreenLabGames vault.</p>
+      </div>
+    </header>
+
+    <section class="shell reveal">
+      <glg-section-head
+        title="Incubation Vault"
+        description="These are our latest projects."
+      ></glg-section-head>
+      <div class="grid-3">
+        <glg-game-card
+          title="Zed City"
+          body="Zombie Survival in your pocket and on the go. Make factions, fight off enemies and upgrade your stronghold."
+          tags="Mobile, Web, Survival, Online"
+        ></glg-game-card>
+        <glg-game-card
+          title="License To Clone"
+          body="A huge Open World Sci-Fi Fantasy with player choice, huge faction wars, town takeover and much more."
+          tags="Steam, 2D, Team-based, Adventure"
+        ></glg-game-card>
+        <glg-game-card
+          title="World Mafia"
+          body="Our oldest (and still going!) game. An oldskool text based crime simulator web game running over over a decade."
+          tags="Mobile, Web, Crime, Online"
+        ></glg-game-card>
+      </div>
+    </section>
+
+    <section class="shell reveal">
+      <div class="grid-2">
+        <article class="panel">
+          <div>
+            <h3>Platform Targets</h3>
+            <p>We primarily deliver to Web due to the power of portability and speed of development. Web ensures no matter what device or OS, our games our playable.</p>
+            <br />
+            <p>We can package our web games to work across Mobile, Steam and Linux</p>
+          </div>
+        </article>
+        <article class="panel">
+          <div>
+            <h3>Playtesting</h3>
+            <p>New features, game prototypes and ideas are being tested all the time. To get involved, join one of our Discord servers or sign up for the newsletter.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <glg-newsletter></glg-newsletter>
+  </main>
+
+  <glg-footer></glg-footer>
+</body>
+</html>

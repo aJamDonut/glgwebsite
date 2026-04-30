@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GreenLabGames | Contact</title>
+  <meta name="description" content="Get in touch with GreenLabGames for playtesting, press, and studio inquiries." />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="components.js" defer></script>
+</head>
+<body>
+  <glg-nav active="contact"></glg-nav>
+
+  <main>
+    <header class="shell hero page-hero reveal">
+      <div>
+        <div class="eyebrow"><span class="pulse"></span> Contact the lab</div>
+        <h1 class="page-title">Start a <span class="gradient-text">conversation.</span></h1>
+        <p class="lead">For playtest access, press requests, collaborations, or studio questions, send us a message.</p>
+      </div>
+    </header>
+
+    <section class="shell reveal">
+      <glg-section-head
+        title="Reach out"
+        description="Use the channels below for the fastest response."
+      ></glg-section-head>
+      <div class="grid-3">
+        <article class="panel">
+          <div>
+            <h3>General</h3>
+            <p>hello@greenlabgames.com</p>
+          </div>
+        </article>
+        <article class="panel">
+          <div>
+            <h3>Press</h3>
+            <p>press@greenlabgames.com</p>
+          </div>
+        </article>
+        <article class="panel">
+          <div>
+            <h3>Playtests</h3>
+            <p>playtest@greenlabgames.com</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell reveal">
+      <article class="form-panel">
+        <label for="name">Name</label>
+        <input id="name" type="text" placeholder="Your name" />
+
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="you@domain.com" />
+
+        <label for="message">Message</label>
+        <textarea id="message" placeholder="Tell us what you are working on."></textarea>
+
+        <button class="btn primary" type="button">Send Message</button>
+      </article>
+    </section>
+
+    <glg-newsletter></glg-newsletter>
+  </main>
+
+  <glg-footer></glg-footer>
+</body>
+</html>

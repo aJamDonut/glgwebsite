@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GreenLabGames | Experimental Worlds. Playable Futures.</title>
+  <meta name="description" content="GreenLabGames is an indie game studio building strange, beautiful, systems-driven games inspired by nature, science, and play." />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="components.js" defer></script>
+</head>
+<body>
+  <glg-nav active="home"></glg-nav>
+
+  <main>
+    <header class="shell hero reveal">
+      <div>
+        <div class="eyebrow"><span class="pulse"></span> Indie studio cultivating playable ecosystems</div>
+        <h1>Games grown in the <span class="gradient-text">lab.</span></h1>
+        <p class="lead">
+          GreenLabGames builds systems-driven adventures where players nurture their own creations and strategies.
+          We mix systems design, player driven storytelling, and emotional choices for seamless gameplay interactions.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="projects.html">Explore our worlds</a>
+          <a class="btn" href="studio.html">Enter the lab</a>
+        </div>
+        
+      </div>
+
+      <div class="lab-card" aria-label="Animated GreenLabGames creature display">
+        <div class="floating-chip chip-a">Zed City</div>
+        <div class="floating-chip chip-b">License To Clone</div>
+        <div class="floating-chip chip-c">World Mafia</div>
+        <div class="creature" aria-hidden="true"></div>
+       
+        
+      </div>
+    </header>
+
+    <section class="shell reveal">
+      <glg-section-head
+        title="Experiments worth playing."
+        description="Three internal concepts from the GreenLabGames incubation vault."
+      ></glg-section-head>
+
+      <div class="games">
+        <glg-game-card
+          tall
+          title="Sproutcore"
+          body="Grow a party of unstable plant-creatures, splice abilities mid-run, and survive a greenhouse that rewrites its rules every night."
+          tags="Roguelite, Creature Combos, PC / Console"
+        ></glg-game-card>
+
+        <div class="mini-grid">
+          <glg-game-card
+            title="Moss Signal"
+            body="Send living messages through an alien forest where sound, light, and fungus form the interface."
+            tags="Co-op, Puzzle"
+          ></glg-game-card>
+          <glg-game-card
+            title="Slime Rush"
+            body="A twitchy mutation racer about splitting, sticking, bouncing, and becoming too weird to lose."
+            tags="Arcade, High Score"
+          ></glg-game-card>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell reveal">
+      <glg-section-head
+        title="The studio philosophy."
+        description="We prototype like scientists and polish like arcade cabinet obsessives."
+      ></glg-section-head>
+      <div class="grid-3">
+        <glg-feature-card
+          icon="A"
+          title="Experimental first"
+          body="Every project starts with one strong theme that has to feel connected before anything else survives."
+        ></glg-feature-card>
+        <glg-feature-card
+          icon="B"
+          title="Systems that grow"
+          body="Our games prefer emergent interactions, surprising player stories, and mechanics with roots under the surface."
+        ></glg-feature-card>
+        <glg-feature-card
+          icon="C"
+          title="Instantly playable"
+          body="The lab only keeps ideas that are readable, tactile, replayable, and invite continuous strategy even when you stop the game."
+        ></glg-feature-card>
+      </div>
+    </section>
+
+    <glg-newsletter></glg-newsletter>
+  </main>
+
+  <glg-footer></glg-footer>
+</body>
+</html>
