@@ -620,6 +620,111 @@ section {
   line-height: 1.6;
 }
 
+.project-timeline {
+  padding-top: 1rem;
+}
+
+.project-stage {
+  position: relative;
+  min-height: min(78vh, 760px);
+  margin: 0 0 1.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  background:
+    linear-gradient(120deg, rgba(4, 18, 12, 0.35), rgba(4, 18, 12, 0.2)),
+    url("Market.webp") center / cover no-repeat;
+}
+.ltc {
+  background:
+    linear-gradient(120deg, rgba(188, 59, 30, 0.95), rgba(242, 97, 167, 0.2)),
+    url("ltc.PNG") center / cover no-repeat;
+}
+
+.wm {
+  background:
+    linear-gradient(120deg, rgba(15, 6, 137, 0.95), rgba(86, 36, 205, 0.2)),
+    url("wm.png") center / cover no-repeat;
+}
+
+
+.project-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(2, 10, 7, 0.2) 0%, rgba(2, 10, 7, 0.86) 68%, rgba(2, 10, 7, 0.94) 100%),
+    radial-gradient(circle at 15% 20%, rgba(69, 255, 138, 0.32), transparent 46%);
+  z-index: 0;
+}
+
+.project-stage::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(69, 255, 138, 0.15), rgba(198, 255, 77, 0.7), rgba(101, 255, 216, 0.15));
+  z-index: 1;
+}
+
+.project-content {
+  position: relative;
+  z-index: 2;
+  padding: clamp(2.2rem, 5vw, 4.5rem) 0;
+}
+
+.project-kicker {
+  display: inline-flex;
+  margin-bottom: 0.9rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.26);
+  color: rgba(236, 255, 245, 0.86);
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.project-content h2 {
+  max-width: 12ch;
+  font-size: clamp(2.2rem, 8vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: -0.06em;
+  margin-bottom: 1rem;
+  text-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+.project-content p {
+  max-width: 62ch;
+  color: rgba(236, 255, 245, 0.84);
+  font-size: clamp(1rem, 2vw, 1.22rem);
+  line-height: 1.75;
+}
+
+.project-tags {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.project-tags span {
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.22);
+  color: rgba(236, 255, 245, 0.9);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .feature {
   padding: 1.35rem;
   border-radius: 28px;
@@ -804,6 +909,10 @@ footer {
   .nav-links {
     display: none;
   }
+
+  .project-stage {
+    min-height: 66vh;
+  }
 }
 
 @media (max-width: 560px) {
@@ -828,5 +937,13 @@ footer {
 
   .signup input {
     min-height: 48px;
+  }
+
+  .project-stage {
+    min-height: 72vh;
+  }
+
+  .project-content h2 {
+    max-width: none;
   }
 }
