@@ -114,6 +114,7 @@ a {
 }
 
 .nav-inner {
+  position: relative;
   height: 78px;
   display: flex;
   align-items: center;
@@ -164,6 +165,38 @@ a {
 .nav-links a.active {
   color: var(--ink);
   text-shadow: 0 0 18px rgba(69, 255, 138, 0.8);
+}
+
+.mobile-menu-toggle {
+  display: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.24);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.mobile-menu-toggle span {
+  width: 18px;
+  height: 2px;
+  background: var(--ink);
+  border-radius: 999px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.mobile-menu-toggle:hover {
+  border-color: rgba(198, 255, 77, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mobile-nav-links {
+  display: none;
 }
 
 .btn {
@@ -627,7 +660,7 @@ section {
 .project-stage {
   position: relative;
   min-height: min(78vh, 760px);
-  margin: 0 0 1.4rem;
+  margin: 0 0 0rem;
   border-top: 1px solid rgba(255, 255, 255, 0.13);
   border-bottom: 1px solid rgba(255, 255, 255, 0.13);
   overflow: hidden;
@@ -908,6 +941,62 @@ footer {
 
   .nav-links {
     display: none;
+  }
+
+  .mobile-menu-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .mobile-nav-links {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    left: 0;
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.55rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(5, 19, 13, 0.96);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .mobile-nav-links a {
+    padding: 0.8rem 0.9rem;
+    border-radius: 11px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .mobile-nav-links a:hover,
+  .mobile-nav-links a.active {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.08);
+    text-shadow: 0 0 18px rgba(69, 255, 138, 0.8);
+  }
+
+  .mobile-nav-open .mobile-nav-links {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .mobile-nav-open .mobile-menu-toggle span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .mobile-nav-open .mobile-menu-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .mobile-nav-open .mobile-menu-toggle span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   .project-stage {

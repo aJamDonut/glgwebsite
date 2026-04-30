@@ -19,7 +19,18 @@ class GlgNav extends HTMLElement {
             </span>
             <span>GreenLabGames</span>
           </a>
+          <button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav-links" aria-label="Open menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
           <div class="nav-links" aria-label="Main navigation">
+            <a class="${isActive("home")}" href="index.html">Home</a>
+            <a class="${isActive("projects")}" href="projects.html">Projects</a>
+            <a class="${isActive("studio")}" href="studio.html">Studio</a>
+            <a class="${isActive("contact")}" href="contact.html">Contact</a>
+          </div>
+          <div class="mobile-nav-links" id="mobile-nav-links" aria-label="Mobile navigation">
             <a class="${isActive("home")}" href="index.html">Home</a>
             <a class="${isActive("projects")}" href="projects.html">Projects</a>
             <a class="${isActive("studio")}" href="studio.html">Studio</a>
@@ -28,6 +39,37 @@ class GlgNav extends HTMLElement {
         </div>
       </nav>
     `;
+
+    const toggle = this.querySelector(".mobile-menu-toggle");
+    const mobileLinks = this.querySelector(".mobile-nav-links");
+    const closeMenu = () => {
+      if (!toggle || !mobileLinks) return;
+      this.classList.remove("mobile-nav-open");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open menu");
+    };
+
+    if (toggle && mobileLinks) {
+      toggle.addEventListener("click", () => {
+        const isOpen = this.classList.toggle("mobile-nav-open");
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        toggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+      });
+
+      mobileLinks.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => closeMenu());
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!this.classList.contains("mobile-nav-open")) return;
+        if (event.target instanceof Node && this.contains(event.target)) return;
+        closeMenu();
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 900) closeMenu();
+      });
+    }
   }
 }
 
