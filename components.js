@@ -4,7 +4,7 @@ class GlgNav extends HTMLElement {
     this.dataset.rendered = "1";
     const active = (this.getAttribute("active") || "").toLowerCase();
     const isActive = (name) => (active === name ? "active" : "");
-    const navItem = (name, label, href, key) => `<a class="nav-link ${isActive(name)}" href="${href}"><span class="nav-key">${key}</span><span>${label}</span></a>`;
+    const navItem = (name, label, href) => `<a class="nav-link ${isActive(name)}" href="${href}">${label}</a>`;
 
     this.innerHTML = `
       <div class="orb one"></div>
@@ -23,7 +23,7 @@ class GlgNav extends HTMLElement {
                 <circle class="flask-spark spark-two" cx="33" cy="19" r="1.6" fill="#03160c"/>
                 <circle class="flask-spark spark-three" cx="40" cy="24" r="1.8" fill="#03160c"/>
               </svg>
-              <span class="logo-badge" data-flask-badge hidden>0</span>
+              <!-- <span class="logo-badge" data-flask-badge hidden>0</span> -->
             </span>
             <span class="brand-text">
               <span>GreenLabGames</span>
@@ -37,16 +37,16 @@ class GlgNav extends HTMLElement {
             <span></span>
           </button>
           <div class="nav-links" aria-label="Main navigation">
-            ${navItem("home", "Home", "index.html", "01")}
-            ${navItem("projects", "Projects", "projects.html", "02")}
-            ${navItem("studio", "Studio", "studio.html", "03")}
-            ${navItem("contact", "Contact", "contact.html", "04")}
+            ${navItem("home", "Home", "index.html")}
+            ${navItem("projects", "Projects", "projects.html")}
+            ${navItem("studio", "Studio", "studio.html")}
+            ${navItem("contact", "Contact", "contact.html")}
           </div>
           <div class="mobile-nav-links" id="mobile-nav-links" aria-label="Mobile navigation">
-            ${navItem("home", "Home", "index.html", "01")}
-            ${navItem("projects", "Projects", "projects.html", "02")}
-            ${navItem("studio", "Studio", "studio.html", "03")}
-            ${navItem("contact", "Contact", "contact.html", "04")}
+            ${navItem("home", "Home", "index.html")}
+            ${navItem("projects", "Projects", "projects.html")}
+            ${navItem("studio", "Studio", "studio.html")}
+            ${navItem("contact", "Contact", "contact.html")}
           </div>
         </div>
       </nav>
@@ -98,9 +98,10 @@ class GlgNav extends HTMLElement {
 
     document.addEventListener("click", triggerLogoAnimation);
     window.addEventListener("scroll", triggerLogoAnimation, { passive: true });
+    
 
     if (brandLink instanceof HTMLAnchorElement) {
-      brandLink.addEventListener("click", (event) => {
+     /* brandLink.addEventListener("click", (event) => {
         const potionGame = window.glgPotionGame;
         if (!potionGame) return;
 
@@ -120,7 +121,7 @@ class GlgNav extends HTMLElement {
 
         event.preventDefault();
         potionGame.openCollection();
-      });
+      });*/
     }
   }
 }
@@ -519,6 +520,7 @@ function buildCookieManager() {
   });
 }
 
+const POTION_GAME_ENABLED = false;
 const POTION_STATE_KEY = "glg_potion_state_v1";
 const POTION_ITEMS = ["Honey", "Herbs", "Devil Tongue", "Darkroot", "Mushrooms", "Water"];
 const POTION_FLASK_NAMES = [
@@ -824,6 +826,11 @@ function renderFlaskCollection(ui, state) {
 }
 
 function buildPotionGame() {
+  if (!POTION_GAME_ENABLED) {
+    window.glgPotionGame = null;
+    return;
+  }
+
   if (!document.body) return;
 
   const state = loadPotionState();
@@ -1135,7 +1142,9 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   buildCookieManager();
-  buildPotionGame();
+  if (POTION_GAME_ENABLED) {
+    buildPotionGame();
+  }
 
   document.addEventListener("submit", (event) => {
     const form = event.target;
