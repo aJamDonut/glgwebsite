@@ -201,12 +201,52 @@ main {
 }
 
 .hero {
-  min-height: calc(80vh - 78px);
+  min-height: calc(60vh - 78px);
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   gap: 3rem;
   align-items: center;
   padding: 1rem 0 1rem;
+}
+
+.hero-market {
+  position: relative;
+  display: block;
+  grid-template-columns: 1fr;
+  padding: clamp(4rem, 8vw, 6.5rem) 0;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+    url("Market.webp");
+  background-size: cover;
+  background-position: right center;
+  box-shadow: var(--shadow);
+  isolation: isolate;
+}
+
+.hero-market::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(110deg, rgba(3, 16, 10, 0.84) 0%, rgba(3, 16, 10, 0.66) 42%, rgba(9, 33, 22, 0.74) 100%),
+    radial-gradient(circle at 22% 22%, rgba(69, 255, 138, 0.28), transparent 100%);
+  z-index: 0;
+}
+
+.hero-market > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-copy {
+  width: min(1180px, calc(100% - 40px));
+  max-width: none;
+  margin: 0 auto;
+}
+
+.hero-market .lead {
+  color: rgba(236, 255, 245, 0.86);
 }
 
 .page-hero {
@@ -315,6 +355,7 @@ h1,
 .lab-card {
   position: relative;
   min-height: 580px;
+  width: 100%;
   border-radius: 36px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.14);
