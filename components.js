@@ -217,7 +217,7 @@ class GlgNewsletter extends HTMLElement {
           </div>
           <form class="signup" data-newsletter-form>
             <input type="email" placeholder="player@domain.com" aria-label="Email address" required />
-            <button class="btn primary" type="submit">Join</button>
+            <button class="btn square" type="submit">Join</button>
           </form>
         </div>
       </section>
