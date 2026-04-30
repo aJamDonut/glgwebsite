@@ -123,6 +123,7 @@ a {
 }
 
 .brand {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
@@ -132,20 +133,217 @@ a {
 }
 
 .logo {
-  width: 42px;
-  height: 42px;
+  width: 58px;
+  height: 58px;
+  position: relative;
+  isolation: isolate;
   display: grid;
   place-items: center;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--green), var(--lime));
+  border-radius: 17px;
+  border: 2px solid rgba(198, 255, 77, 0.62);
+  background:
+    radial-gradient(circle at 24% 20%, rgba(236, 255, 245, 0.62), transparent 34%),
+    linear-gradient(138deg, #63ffac 0%, var(--green) 45%, #d9ff5f 100%);
   color: #032012;
-  box-shadow: 0 0 30px rgba(69, 255, 138, 0.45);
-  transform: rotate(-6deg);
+  box-shadow:
+    0 0 30px rgba(69, 255, 138, 0.55),
+    0 0 64px rgba(101, 255, 216, 0.24);
+  transform: rotate(-4deg);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.logo::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 20px;
+  border: 2px solid rgba(198, 255, 77, 0.55);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .logo svg {
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
+  overflow: visible;
+}
+
+.logo .flask-neck,
+.logo .flask-body {
+  filter: drop-shadow(0 0 8px rgba(3, 22, 12, 0.28));
+}
+
+.logo .flask-liquid {
+  transform-origin: 32px 40px;
+}
+
+.logo .flask-bubble {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.logo .bubble-two {
+  animation-delay: 0.32s;
+}
+
+.logo .flask-spark {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.logo .spark-two {
+  animation-delay: 0.2s;
+}
+
+.logo .spark-three {
+  animation-delay: 0.4s;
+}
+
+.brand:hover .logo,
+.brand:focus-visible .logo {
+  transform: rotate(-4deg);
+  box-shadow:
+    0 0 38px rgba(69, 255, 138, 0.8),
+    0 0 82px rgba(198, 255, 77, 0.38);
+  filter: saturate(1.12);
+}
+
+.logo-active .logo .flask-bubble {
+  animation: logoBubbleBurst 2s cubic-bezier(0.2, 0.7, 0.2, 1) infinite;
+}
+
+.logo-active .logo .flask-spark {
+  animation: logoSparkBurst 2s cubic-bezier(0.2, 0.7, 0.2, 1) infinite;
+}
+
+.logo-active .brand:hover .logo .flask-spark,
+.logo-active .brand:focus-visible .logo .flask-spark {
+  animation-duration: 1s;
+}
+
+@keyframes logoTilt {
+  0%,
+  100% {
+    transform: rotate(-4deg) translateY(0);
+  }
+
+  50% {
+    transform: rotate(-2deg) translateY(-2px);
+  }
+}
+
+@keyframes logoGlowPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 30px rgba(69, 255, 138, 0.45),
+      0 0 64px rgba(101, 255, 216, 0.24);
+  }
+
+  50% {
+    box-shadow:
+      0 0 44px rgba(69, 255, 138, 0.82),
+      0 0 86px rgba(198, 255, 77, 0.42);
+  }
+}
+
+@keyframes logoAuraPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.48;
+  }
+
+  50% {
+    transform: scale(1.06);
+    opacity: 0.78;
+  }
+}
+
+@keyframes logoFlaskInk {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.82;
+  }
+}
+
+@keyframes logoLiquidWave {
+  0%,
+  20%,
+  100% {
+    transform: translateY(0) scaleX(1);
+  }
+
+  10% {
+    transform: translateY(-1.8px) scaleX(1.14);
+  }
+
+  14% {
+    transform: translateY(0.6px) scaleX(0.98);
+  }
+}
+
+@keyframes logoBubbleBurst {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  30% {
+    transform: translateY(-10px) scale(1.22);
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    transform: translateY(-15px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes logoSparkBurst {
+  0% {
+    transform: translateY(0) scale(0.45);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  28% {
+    transform: translateY(-11px) scale(1.2);
+    opacity: 0.9;
+  }
+
+  52%,
+  100% {
+    transform: translateY(-16px) scale(0);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo,
+  .logo .flask-liquid,
+  .logo .flask-bubble,
+  .logo .flask-spark {
+    animation: none;
+  }
+
+  .logo::before,
+  .logo .flask-neck,
+  .logo .flask-body {
+    animation: none;
+  }
 }
 
 .nav-links {
@@ -1445,6 +1643,17 @@ body.cookie-modal-open {
 @media (max-width: 560px) {
   .shell {
     width: min(100% - 28px, 1180px);
+  }
+
+  .logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+  }
+
+  .logo svg {
+    width: 32px;
+    height: 32px;
   }
 
   .hero {

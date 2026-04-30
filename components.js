@@ -13,11 +13,14 @@ class GlgNav extends HTMLElement {
           <a class="brand" href="index.html" aria-label="GreenLabGames home">
             <span class="logo" aria-hidden="true">
               <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25 10H39" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-                <path d="M29 10V24L17 42C13 49 18 56 26 56H38C46 56 51 49 47 42L35 24V10" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M22 38C26 35 30 44 35 41C38 39 40 35 44 37" stroke="#03160c" stroke-width="4" stroke-linecap="round"/>
-                <circle cx="28" cy="45" r="2.5" fill="#03160c"/>
-                <circle cx="39" cy="47" r="2" fill="#03160c"/>
+                <path class="flask-neck" d="M22 9H42" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+                <path class="flask-body" d="M26 9V22L14 42C10 50 16 58 26 58H38C48 58 54 50 50 42L38 22V9" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="flask-liquid" d="M19 40C24 36 29 44 35 41C40 39 42 35 46 38" stroke="#03160c" stroke-width="5" stroke-linecap="round"/>
+                <circle class="flask-bubble bubble-one" cx="27" cy="46" r="2.8" fill="#03160c"/>
+                <circle class="flask-bubble bubble-two" cx="38" cy="47" r="2.4" fill="#03160c"/>
+                <circle class="flask-spark spark-one" cx="27" cy="24" r="1.9" fill="#03160c"/>
+                <circle class="flask-spark spark-two" cx="33" cy="19" r="1.6" fill="#03160c"/>
+                <circle class="flask-spark spark-three" cx="40" cy="24" r="1.8" fill="#03160c"/>
               </svg>
             </span>
             <span>GreenLabGames</span>
@@ -73,6 +76,21 @@ class GlgNav extends HTMLElement {
         if (window.innerWidth > 900) closeMenu();
       });
     }
+
+    let logoAnimationTimeout = null;
+    const triggerLogoAnimation = () => {
+      this.classList.add("logo-active");
+      if (logoAnimationTimeout) {
+        window.clearTimeout(logoAnimationTimeout);
+      }
+
+      logoAnimationTimeout = window.setTimeout(() => {
+        this.classList.remove("logo-active");
+      }, 1800);
+    };
+
+    document.addEventListener("click", triggerLogoAnimation);
+    window.addEventListener("scroll", triggerLogoAnimation, { passive: true });
   }
 }
 
