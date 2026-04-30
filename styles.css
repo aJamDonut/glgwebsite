@@ -1232,8 +1232,8 @@ section {
 }
 .ltc {
   background:
-    linear-gradient(120deg, rgba(188, 59, 30, 0.95), rgba(242, 97, 167, 0.2)),
-    url("ltc.PNG") center / cover no-repeat;
+    linear-gradient(120deg, rgba(0, 0, 0, 0.15), rgba(186, 81, 1, 0.9)),
+    url("ltc.png") right / cover no-repeat;
 }
 
 .wm {
@@ -1243,13 +1243,24 @@ section {
 }
 
 
+
 .project-stage::before {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(2, 10, 7, 0.2) 0%, rgba(2, 10, 7, 0.86) 68%, rgba(2, 10, 7, 0.94) 100%),
+    linear-gradient(180deg, rgba(3, 10, 2, 0.2) 0%, rgba(2, 10, 7, 0.86) 68%, rgba(2, 10, 7, 0.94) 100%),
     radial-gradient(circle at 15% 20%, rgba(69, 255, 138, 0.32), transparent 46%);
+  z-index: 0;
+}
+
+.ltc::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(103, 99, 13, 0.2) 0%, rgba(72, 72, 53, 0.0) 68%, rgba(148, 76, 31, 0.94) 100%),
+    radial-gradient(circle at 15% 20%, rgba(135, 6, 6, 0.32), transparent 46%);
   z-index: 0;
 }
 
