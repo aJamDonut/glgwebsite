@@ -285,7 +285,55 @@ main {
 .page-hero {
   min-height: auto;
   grid-template-columns: 1fr;
-  padding: 1rem 0 0.5rem;
+  padding: 1.5rem 0 1.5rem;
+}
+
+.hero-divider {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.hero-divider::before {
+  content: "";
+  position: absolute;
+  inset: -12px 0 -10px;
+  background:
+    radial-gradient(circle at 50% 80%, rgba(69, 255, 138, 0.25), transparent 80%),
+    radial-gradient(circle at 50% 0%, rgba(198, 255, 77, 0.2), transparent 80%);
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.hero-divider span {
+  position: relative;
+  display: block;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(101, 255, 216, 0),
+    rgba(69, 255, 138, 0.45) 16%,
+    rgba(198, 255, 77, 0.9) 50%,
+    rgba(69, 255, 138, 0.45) 84%,
+    rgba(101, 255, 216, 0)
+  );
+  box-shadow: 0 0 22px rgba(69, 255, 138, 0.3);
+  z-index: 1001;
+}
+
+.hero-divider span::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(198, 255, 77, 0.95) 0%, rgba(69, 255, 138, 0.4) 45%, transparent 70%);
 }
 
 .eyebrow {
@@ -661,8 +709,7 @@ section {
   position: relative;
   min-height: min(78vh, 760px);
   margin: 0 0 0rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.13);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+  
   overflow: hidden;
   isolation: isolate;
   display: grid;
