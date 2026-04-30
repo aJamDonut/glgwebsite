@@ -7,8 +7,6 @@ class GlgNav extends HTMLElement {
     const navItem = (name, label, href) => `<a class="nav-link ${isActive(name)}" href="${href}">${label}</a>`;
 
     this.innerHTML = `
-      <div class="orb one"></div>
-      <div class="orb two"></div>
       <nav class="nav">
         <div class="shell nav-inner">
           <a class="brand" href="index.html" aria-label="GreenLabGames home">
