@@ -13,8 +13,11 @@ class GlgNav extends HTMLElement {
           <a class="brand" href="index.html" aria-label="GreenLabGames home">
             <span class="logo" aria-hidden="true">
               <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 40C14 25 25 14 40 14C44 14 48 15 52 17C51 35 41 50 24 53C18 52 14 47 14 40Z" fill="currentColor"/>
-                <path d="M24 43C30 31 39 25 52 17" stroke="#03160c" stroke-width="5" stroke-linecap="round"/>
+                <path d="M25 10H39" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                <path d="M29 10V24L17 42C13 49 18 56 26 56H38C46 56 51 49 47 42L35 24V10" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 38C26 35 30 44 35 41C38 39 40 35 44 37" stroke="#03160c" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="28" cy="45" r="2.5" fill="#03160c"/>
+                <circle cx="39" cy="47" r="2" fill="#03160c"/>
               </svg>
             </span>
             <span>GreenLabGames</span>
