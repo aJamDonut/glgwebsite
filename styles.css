@@ -491,6 +491,7 @@ main {
   width: 100%;
   margin: 0;
   padding: 0;
+  z-index: 10000;
 }
 
 .hero-divider::before {
@@ -502,7 +503,7 @@ main {
     radial-gradient(circle at 50% 0%, rgba(198, 255, 77, 0.2), transparent 80%);
   opacity: 0.65;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 10000;
 }
 
 .hero-divider span {
@@ -519,7 +520,7 @@ main {
     rgba(101, 255, 216, 0)
   );
   box-shadow: 0 0 22px rgba(69, 255, 138, 0.3);
-  z-index: 1001;
+  z-index: 10001;
 }
 
 .hero-divider span::after {
@@ -532,6 +533,7 @@ main {
   border-radius: 999px;
   transform: translate(-50%, -50%);
   background: radial-gradient(circle, rgba(198, 255, 77, 0.95) 0%, rgba(69, 255, 138, 0.4) 45%, transparent 70%);
+  z-index: 10002;
 }
 
 .eyebrow {
